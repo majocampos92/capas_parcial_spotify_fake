@@ -12,7 +12,4 @@ public class SavePlaylistDTO {
 	@NotEmpty(message = "Description is required")
 	private String description;
 	
-	@NotEmpty(message = "User ID is required")
-	private String userId;
-	
 }

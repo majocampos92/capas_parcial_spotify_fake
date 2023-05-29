@@ -22,6 +22,7 @@ import com.example.demo.models.dtos.SavePlaylistDTO;
 import com.example.demo.models.entities.Playlist;
 import com.example.demo.models.entities.User;
 import com.example.demo.services.PlaylistService;
+import com.example.demo.services.UserService;
 import com.example.demo.utils.ErrorHandlers;
 
 import jakarta.validation.Valid;
@@ -33,6 +34,9 @@ public class PlaylistController {
 
 	@Autowired
 	private PlaylistService playlistService;
+	
+	@Autowired
+	private UserService userService;
 	
 	@Autowired
 	private ErrorHandlers errorHandler;
@@ -62,11 +66,17 @@ public class PlaylistController {
 					errorHandler.mapErrors(validations.getFieldErrors()),
 					HttpStatus.BAD_REQUEST);
 		} 
+
+		User userFound = userService.findOneByID(userCode.getCode().toString());
+		
+		if(userFound == null){
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
 		
 		try {
-			playlistService.save(info, userCode);
-
 			
+			playlistService.save(info, userFound);
+
 			System.out.println(userCode);
 			return new ResponseEntity<>(
 					new MessageDTO("Playlist created"), HttpStatus.CREATED);
@@ -77,19 +87,20 @@ public class PlaylistController {
 		}
 	}
 	
-	@DeleteMapping("/delete/{id}")
-	public ResponseEntity<?> deletePlaylisById(@PathVariable(name = "id") UUID code, BindingResult validations) {
-		if(validations.hasErrors()) {
-			return new ResponseEntity<>(new ErrorsDTO(
-					errorHandler.mapErrors(validations.getFieldErrors())), 
-					HttpStatus.BAD_REQUEST
-					);
+	@DeleteMapping("/delete/{code}")
+	public ResponseEntity<?> deletePlaylistById(@PathVariable(name = "code") UUID code) {
+		
+		Playlist playlistFound = playlistService.findOneById(code.toString());
+		
+		if (playlistFound == null) {
+			return new ResponseEntity<>(new MessageDTO("Playlist not found"), HttpStatus.NOT_FOUND);
 		}
+		
 		try {
-			playlistService.deleteById(code.toString());
+			playlistService.deleteById(playlistFound.getCode().toString());
 			return new ResponseEntity<>(new MessageDTO("Playlist deleted"), HttpStatus.OK);
-		} catch (Exception error) {
-			error.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
 			return new ResponseEntity<>(new MessageDTO("Internal Server Error"), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	} 

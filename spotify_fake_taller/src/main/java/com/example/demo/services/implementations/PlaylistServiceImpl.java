@@ -32,10 +32,9 @@ public class PlaylistServiceImpl implements PlaylistService {
 	}
 
 	@Override
-	@Transactional(rollbackOn = Exception.class)
-	public void deleteById(String id) throws Exception {
-		UUID code = UUID.fromString(id);
-		playlistRepository.deleteById(code);
+	public void deleteById(String code) throws Exception {
+		UUID playlistCode = UUID.fromString(code);
+		playlistRepository.deleteById(playlistCode);
 	}
 
 	@Override
