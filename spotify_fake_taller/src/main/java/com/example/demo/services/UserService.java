@@ -13,4 +13,5 @@ public interface UserService {
 	void DeletebyId (UUID id) throws Exception;
 	List<User> findAll();
 	User AuthUser (String identifier, String password);
+	User findOneByID (String id);
 }

@@ -74,6 +74,13 @@ public class UserServiceImpl implements UserService {
 	public void DeletebyId(UUID id) throws Exception {
 		userRepository.deleteById(id);
 	}
+
+	@Override
+	public User findOneByID(String id) {
+		UUID uuid = UUID.fromString(id);
+		User userToFind = userRepository.findOneBycode(uuid);
+		return userToFind;
+	}
 	
 	
 	
