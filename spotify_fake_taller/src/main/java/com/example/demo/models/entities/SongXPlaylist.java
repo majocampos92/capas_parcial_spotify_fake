@@ -27,11 +27,11 @@ public class SongXPlaylist {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private UUID code;
 	
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "song_code", nullable = true)
 	private Song songCode;
 	
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "playlist_code", nullable = true)
 	private Playlist playlistCode;
 	
