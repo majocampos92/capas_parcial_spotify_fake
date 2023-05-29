@@ -36,7 +36,7 @@ public class Song {
 	@Column(name = "duration_song")
 	private Integer duration;
 	
-	@OneToMany(mappedBy = "songCode", fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "song", fetch = FetchType.LAZY)
 	@JsonIgnore
 	private List<SongXPlaylist> playlistSongs;
 

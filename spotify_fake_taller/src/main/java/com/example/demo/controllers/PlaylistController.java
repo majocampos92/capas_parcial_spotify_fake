@@ -2,6 +2,8 @@ package com.example.demo.controllers;
 
 import java.util.List;
 import java.util.UUID;
+import java.text.SimpleDateFormat;  
+import java.util.Date;  
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,9 +21,14 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.demo.models.dtos.ErrorsDTO;
 import com.example.demo.models.dtos.MessageDTO;
 import com.example.demo.models.dtos.SavePlaylistDTO;
+import com.example.demo.models.dtos.SongXPlaylistSaveDTO;
 import com.example.demo.models.entities.Playlist;
+import com.example.demo.models.entities.Song;
+import com.example.demo.models.entities.SongXPlaylist;
 import com.example.demo.models.entities.User;
 import com.example.demo.services.PlaylistService;
+import com.example.demo.services.SongService;
+import com.example.demo.services.SongXPlaylistService;
 import com.example.demo.services.UserService;
 import com.example.demo.utils.ErrorHandlers;
 
@@ -37,6 +44,12 @@ public class PlaylistController {
 	
 	@Autowired
 	private UserService userService;
+	
+	@Autowired
+	private SongService songService;
+	
+	@Autowired
+	private SongXPlaylistService songXplaylistService;
 	
 	@Autowired
 	private ErrorHandlers errorHandler;
@@ -118,4 +131,44 @@ public class PlaylistController {
 			);
 	}
 	
+	@GetMapping("/songs/{code}")
+	public ResponseEntity<?> searchPlaylistWithTheSong(@PathVariable String code) {
+		Playlist playlist = playlistService.findOneById(code);
+		
+		if(playlist == null) 
+			return new ResponseEntity<>("playlist not found", HttpStatus.NOT_FOUND);
+		
+		List<SongXPlaylist> songXplaylist = playlist.getPlaylistSongs();
+		return new ResponseEntity<>(songXplaylist, HttpStatus.OK);
+	}
+	
+	@PostMapping("/add/song")
+	public ResponseEntity<?> addSongToPlaylist(@ModelAttribute @Valid SongXPlaylistSaveDTO data, BindingResult validations){
+		if (validations.hasErrors()) {
+			return new ResponseEntity<>(
+					errorHandler.mapErrors(validations.getFieldErrors()),
+					HttpStatus.BAD_REQUEST);
+		} 
+		Song song = songService.findById(data.getSongCode());
+		Playlist playlist = playlistService.findOneById(data.getPlaylistCode());
+		
+		if(song == null)
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		
+		if(playlist == null)
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		
+		SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");  
+	    Date date = new Date(); 
+		
+		try {
+			songXplaylistService.createSongXPlaylist(date, playlist, song);
+			return new ResponseEntity<>(
+					new MessageDTO("Song Added"), HttpStatus.CREATED);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new ResponseEntity<>(
+					new MessageDTO("Internal Server Error"), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
 }

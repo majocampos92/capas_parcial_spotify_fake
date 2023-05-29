@@ -1,5 +1,7 @@
 package com.example.demo.controllers;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,9 +21,13 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.demo.models.dtos.ErrorsDTO;
 import com.example.demo.models.dtos.MessageDTO;
 import com.example.demo.models.dtos.SongDTO;
+import com.example.demo.models.dtos.SongXPlaylistSaveDTO;
+import com.example.demo.models.entities.Playlist;
 import com.example.demo.models.entities.Song;
 import com.example.demo.models.entities.SongXPlaylist;
+import com.example.demo.services.PlaylistService;
 import com.example.demo.services.SongService;
+import com.example.demo.services.SongXPlaylistService;
 import com.example.demo.utils.ErrorHandlers;
 
 import jakarta.validation.Valid;
@@ -36,6 +42,12 @@ public class SongController {
 	
 	@Autowired
 	private ErrorHandlers errorHandler;
+	
+	@Autowired
+	private PlaylistService playlistService;
+	
+	@Autowired
+	private SongXPlaylistService songXplaylistService;
 	
 	//CREATE SONG 
 	@PostMapping("/")
@@ -128,14 +140,42 @@ public class SongController {
 		Song song = songService.findById(code);
 		
 		if(song == null) 
-			return new ResponseEntity<>("user not found", HttpStatus.NOT_FOUND);
+			return new ResponseEntity<>("song not found", HttpStatus.NOT_FOUND);
 		
 		List<SongXPlaylist> songXplaylist = song.getPlaylistSongs();
 		return new ResponseEntity<>(songXplaylist, HttpStatus.OK);
 	}
 	
 	
-	
+	@PostMapping("/assign/playlist")
+	public ResponseEntity<?> addSongToPlaylist(@ModelAttribute @Valid SongXPlaylistSaveDTO data, BindingResult validations){
+		if (validations.hasErrors()) {
+			return new ResponseEntity<>(
+					errorHandler.mapErrors(validations.getFieldErrors()),
+					HttpStatus.BAD_REQUEST);
+		} 
+		Song song = songService.findById(data.getSongCode());
+		Playlist playlist = playlistService.findOneById(data.getPlaylistCode());
+		
+		if(song == null)
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		
+		if(playlist == null)
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		
+		SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");  
+	    Date date = new Date(); 
+		
+		try {
+			songXplaylistService.createSongXPlaylist(date, playlist, song);
+			return new ResponseEntity<>(
+					new MessageDTO("Song Added"), HttpStatus.CREATED);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new ResponseEntity<>(
+					new MessageDTO("Internal Server Error"), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
 	
 	
 	

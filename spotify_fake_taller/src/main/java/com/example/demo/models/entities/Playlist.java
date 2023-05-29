@@ -41,7 +41,7 @@ public class Playlist {
 	@ManyToOne(fetch = FetchType.EAGER)
 	private User userCode;
 	
-	@OneToMany(mappedBy = "playlistCode", fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "playlist", fetch = FetchType.LAZY)
 	@JsonIgnore
 	private List<SongXPlaylist> playlistSongs;
 

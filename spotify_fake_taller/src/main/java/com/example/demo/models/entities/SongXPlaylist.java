@@ -29,19 +29,19 @@ public class SongXPlaylist {
 	
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "song_code", nullable = true)
-	private Song songCode;
+	private Song song;
 	
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "playlist_code", nullable = true)
-	private Playlist playlistCode;
+	private Playlist playlist;
 	
 	@Column(name = "date_added")
 	private Date dateAdded;
 
 	public SongXPlaylist(Song songCode, Playlist playlistCode, Date dateAdded) {
 		super();
-		this.songCode = songCode;
-		this.playlistCode = playlistCode;
+		this.song = songCode;
+		this.playlist = playlistCode;
 		this.dateAdded = dateAdded;
 	}
 	
