@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.models.dtos.SaveUserDTO;
-import com.example.demo.models.dtos.UpdateDTO;
 import com.example.demo.models.entities.User;
 import com.example.demo.repositories.UserRepository;
 import com.example.demo.services.UserService;
@@ -75,6 +74,7 @@ public class UserServiceImpl implements UserService {
 	public void DeletebyId(UUID id) throws Exception {
 		userRepository.deleteById(id);
 	}
+	
 	
 	
 }
