@@ -44,9 +44,9 @@ public class Song {
 		this.duration = duration;
 	}
 	
-	public Song() {
-		super();
-	}
+	//public Song() {
+	//	super();
+	//}
 
 	public UUID getCode() {
 		return code;
