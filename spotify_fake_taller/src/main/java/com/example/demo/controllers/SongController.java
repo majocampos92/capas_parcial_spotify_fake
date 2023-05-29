@@ -20,6 +20,7 @@ import com.example.demo.models.dtos.ErrorsDTO;
 import com.example.demo.models.dtos.MessageDTO;
 import com.example.demo.models.dtos.SongDTO;
 import com.example.demo.models.entities.Song;
+import com.example.demo.models.entities.SongXPlaylist;
 import com.example.demo.services.SongService;
 import com.example.demo.utils.ErrorHandlers;
 
@@ -121,4 +122,23 @@ public class SongController {
 			List<Song> songs = songService.findByDurationBetween(start, end);
 			return new ResponseEntity<>(songs, HttpStatus.OK);
 	}
+	
+	@GetMapping("/inplaylist/{code}")
+	public ResponseEntity<?> searchPlaylistWithTheSong(@PathVariable String code) {
+		Song song = songService.findById(code);
+		
+		if(song == null) 
+			return new ResponseEntity<>("user not found", HttpStatus.NOT_FOUND);
+		
+		List<SongXPlaylist> songXplaylist = song.getPlaylistSongs();
+		return new ResponseEntity<>(songXplaylist, HttpStatus.OK);
+	}
+	
+	
+	
+	
+	
+	
+	
+	
 }

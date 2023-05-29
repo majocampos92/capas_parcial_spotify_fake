@@ -14,13 +14,15 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.util.*;
 
 @Data
 @NoArgsConstructor
 @Entity
-@Table(name = "user")
+@Table(name = "user", schema = "public")
+@ToString(exclude = {"userPlaylist"})
 public class User {
 	
 	@Id

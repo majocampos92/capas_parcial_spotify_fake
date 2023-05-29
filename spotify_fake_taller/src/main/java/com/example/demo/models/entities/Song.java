@@ -14,6 +14,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.util.*;
 
@@ -21,6 +22,7 @@ import java.util.*;
 @NoArgsConstructor
 @Entity
 @Table(name = "song", schema="public")
+@ToString(exclude = {"playlistSongs"})
 public class Song {
 	
 	@Id
